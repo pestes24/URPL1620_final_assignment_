@@ -6,4 +6,4 @@ library(lubridate)
 library(urbnthemes) 
 set_urbn_defaults(style = "print")
 
-#cd05290c85440e7e445f0900d13bb133bfdfa6ad
+census_api_key("cd05290c85440e7e445f0900d13bb133bfdfa6ad", install = TRUE)
