@@ -113,7 +113,9 @@ ncal_pumas <- get_acs(
   year = 2022,
   survey = "acs1",
   output = "wide") %>% 
-  filter(str_detect(NAME, counties_norcal_megaregion))
+  filter(str_detect(NAME, counties_norcal_megaregion)) %>% 
+  filter(!str_detect(NAME, "Los Angeles")) 
+   #^because of "Marin" the filter above was pulling two LA counties with "Marina"
 
 #clean names and mutate some variables to create pooled driving times 
   
