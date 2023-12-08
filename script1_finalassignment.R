@@ -40,7 +40,7 @@ norcal_megaregion_pumas <- get_acs(
     rentburd_40_50 = "B25070_009",  # rent burden 40.0 to 49.9 percent
     rentburd_over_50 = "B25070_010",  # rent burden 50.0 percent or more
     rentburd_subtract = "B25070_011",  # not computed; subtract from denominator
-    total_pop = "B01001_001", #total population, from sex by age
+    total_pop = "B01001_001" #total population, from sex by age
   ),
   state = "California",
   year = 2022,
@@ -48,12 +48,13 @@ norcal_megaregion_pumas <- get_acs(
   output = "wide")
 
  
-  %>% 
+norcal_megaregion_counties  %>% 
   #what other counties do I want to add? 
   #full northern california megaregion? 
   #https://www.spur.org/news/2018-06-19/where-exactly-bay-area
   filter(
-    NAME == "San Francisco County, California" |
+      #San Francisco Bay Area  
+      NAME == "San Francisco County, California" |
       NAME == "Alameda County, California" |
       NAME == "Contra Costa County, California" |
       NAME == "Marin County, California" |
@@ -61,9 +62,24 @@ norcal_megaregion_pumas <- get_acs(
       NAME == "Solano County, California" |
       NAME == "Sonoma County, California" |
       NAME == "San Mateo County, California" |
+      NAME == "Santa Clara County, California" |
+      #Sacramento Area
       NAME == "Sacramento County, California" |
+      NAME == "Yolo County, California" |
+      NAME == "Yuba County, California" |
+      NAME == "Sutter County, California" |
+      NAME == "Placer County, California" |
+      NAME == "El Dorado County, California" |
+      #Northern San Joaquin Valley
       NAME == "San Joaquin County, California" |
-      NAME == "Santa Clara County, California"
+      NAME == "Stanislaus County, California" |
+      NAME == "Merced County, California" |
+      #Monterey Bay Area
+      NAME == "San Benito County, California" |
+      NAME == "Monterey County, California" |
+      NAME == "Santa Cruz County, California"
   )
+
+
 #clean names and mutate some variables to create pooled driving times 
   
