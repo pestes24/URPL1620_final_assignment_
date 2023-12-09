@@ -71,6 +71,7 @@ ncal_counties_2022 <- ncal_counties_2022 %>%
     commutepercent_over90 = 100*commute_over_90E/commute_averageE,
     commutepercent_car = 100*commute_carE/agg_commute_all_typesE,
     commutepercent_pt = 100*commute_ptE/agg_commute_all_typesE,
+    NAME = str_remove(NAME, "County, California")
   )
 
 
@@ -114,7 +115,8 @@ ncal_pumas_2022 <- ncal_pumas_2022 %>%
     commutepercent_over60 = 100*(commute_60to89E+commute_over_90E)/commute_averageE,
     commutepercent_over90 = 100*commute_over_90E/commute_averageE,
     commutepercent_car = 100*commute_carE/agg_commute_all_typesE,
-    commutepercent_pt = 100*commute_ptE/agg_commute_all_typesE
+    commutepercent_pt = 100*commute_ptE/agg_commute_all_typesE,
+    NAME = str_remove(NAME, "County, California")
   )
 
 #now re-running with copied code from above but pulling pre-pandemic data
@@ -159,6 +161,7 @@ ncal_counties_2019 <- ncal_counties_2019 %>%
     commutepercent_over90 = 100*commute_over_90E/commute_averageE,
     commutepercent_car = 100*commute_carE/agg_commute_all_typesE,
     commutepercent_pt = 100*commute_ptE/agg_commute_all_typesE,
+    NAME = str_remove(NAME, "County, California")
   )
 
 #filter for the specific pumas in norcal megaregion
@@ -205,6 +208,7 @@ ncal_pumas_2019 <- ncal_pumas_2019 %>%
     commutepercent_over90 = 100*commute_over_90E/commute_averageE,
     commutepercent_car = 100*commute_carE/agg_commute_all_typesE,
     commutepercent_pt = 100*commute_ptE/agg_commute_all_typesE,
+    NAME = str_remove(NAME, "County, California")
   )
 
 
@@ -270,7 +274,7 @@ chart_ncal_counties_test2
 #cleveland dot plots
 ncal_counties_2019_clevelanddot <- ncal_counties_2019 %>%
   arrange(commutepercent_over90) %>%
-  mutate(NAME = factor(NAME, levels = .$NAME)) %>%
+  mutate(NAME = factor(NAME, levels = unique(NAME))) %>%
   ggplot(aes(commutepercent_over90, NAME)) +
   geom_point() +
   scale_x_continuous(expand = expansion(mult = c(0, 0)), limits = c(0, 15)) +
@@ -285,7 +289,7 @@ ncal_counties_2019_clevelanddot
 
 ncal_counties_2022_clevelanddot <- ncal_counties_2022 %>%
   arrange(commutepercent_over90) %>%
-  mutate(NAME = factor(NAME, levels = .$NAME)) %>%
+  mutate(NAME = factor(NAME, levels = unique(NAME))) %>%
   ggplot(aes(commutepercent_over90, NAME)) +
   geom_point() +
   scale_x_continuous(expand = expansion(mult = c(0, 0)), limits = c(0, 15)) +
@@ -310,7 +314,10 @@ ncal_counties_2019_2022_clevelanddot <- ncal_counties_2019_2022 %>%
   geom_segment(color = "darkgrey", linewidth = 1, alpha = 0.5, linetype = "solid",
                aes(x = commutepercent_over90_2019, xend = commutepercent_over90_2022,
                    y = NAME_2019, yend = NAME_2019),
-                   arrow = arrow(length = unit(0.3,"cm"),type = "closed")
+                   arrow = arrow(length = unit(0.25,"cm"),
+                                 type = "closed", 
+                                 angle=25),
+               arrow.fill = "darkgrey", 
                ) +
   scale_x_continuous(expand = expansion(mult = c(0, 0)), limits = c(0, 15)) +
   labs(
@@ -319,7 +326,8 @@ ncal_counties_2019_2022_clevelanddot <- ncal_counties_2019_2022 %>%
     x = NULL, 
     y = "% of commutes lasting longer than 90 minutes",
     caption = "Source: Census Bureau") +
-  theme(legend.position = "bottom") 
+  theme_minimal()
+#will have to return and add legend
 
 ncal_counties_2019_2022_clevelanddot
 
