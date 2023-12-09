@@ -194,6 +194,7 @@ ncal_pumas_2019 <- get_acs(
   filter(str_detect(NAME, counties_norcal_megaregion)) %>% 
   filter(!str_detect(NAME, "Los Angeles")) 
     #note: after pulling these, realized that there are 6 new PUMAs in Norcal
+    #they all have different geoIDs too
     #ran some stuff in the console, found one new PUMA in each of these counties: 
     #Sacramento, SF, San Joaquin, Santa Clara, Sonoma, Yolo
     #given this, comparison between PUMAs in these areas will be trickier and may need to be avoided
@@ -216,7 +217,7 @@ top10ncal_counties_2022 <- ncal_counties_2022 %>%
 #exploratory ggplotting
 chart_ncal_counties_test <- ggplot(top10ncal_counties_2022) +
   geom_col( 
-    aes(y = commutepercent_over90,x=NAME)) +
+    aes(x = reorder(NAME, -commutepercent_over90), y = commutepercent_over90)) +
   scale_y_continuous(
     limits = c(0,15),
     labels = scales::number_format(scale = 1, big.mark = ""),
@@ -235,3 +236,51 @@ chart_ncal_counties_test <- ggplot(top10ncal_counties_2022) +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
 chart_ncal_counties_test
+
+top10ncal_counties_2019 <- ncal_counties_2019 %>%
+  top_n(10, wt = commutepercent_over90)
+
+chart_ncal_counties_test2 <- ggplot(top10ncal_counties_2019) +
+  geom_col( 
+    aes(x = reorder(NAME, -commutepercent_over90), y = commutepercent_over90)) +
+  scale_y_continuous(
+    limits = c(0,15),
+    labels = scales::number_format(scale = 1, big.mark = ""),
+    breaks= seq(0, 15, by=1)
+  ) +
+  labs(
+    title = "test",
+    subtitle = "just
+    a
+    test",
+    x = "",
+    y = "% of commutes over 90minutes",
+    caption = "Source: Census Bureau" 
+  )+
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+chart_ncal_counties_test2
+
+#cleveland dot plots
+ncal_counties_2019_clevelanddot <- ncal_counties_2019 %>%
+  arrange(commutepercent_over90) %>%
+  mutate(NAME = factor(NAME, levels = .$NAME)) %>%
+  ggplot(aes(commutepercent_over90, NAME)) +
+  geom_point() +
+  scale_x_continuous(expand = expansion(mult = c(0, 0)), limits = c(0, 20)) +
+  labs(x = NULL, 
+       y = "% of commutes lasting longer than 90 minutes")
+ncal_counties_2019_clevelanddot
+
+
+ncal_counties_2022_clevelanddot <- ncal_counties_2022 %>%
+  arrange(commutepercent_over90) %>%
+  mutate(NAME = factor(NAME, levels = .$NAME)) %>%
+  ggplot(aes(commutepercent_over90, NAME)) +
+  geom_point() +
+  scale_x_continuous(expand = expansion(mult = c(0, 0)), limits = c(0, 20)) +
+  labs(x = NULL, 
+       y = "% of commutes lasting longer than 90 minutes")
+
+ncal_counties_2022_clevelanddot 
