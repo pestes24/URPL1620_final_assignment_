@@ -193,10 +193,10 @@ ncal_pumas_2019 <- get_acs(
   output = "wide") %>% 
   filter(str_detect(NAME, counties_norcal_megaregion)) %>% 
   filter(!str_detect(NAME, "Los Angeles")) 
-    #note: after pulling these, realized that there are 6 new PUMAs in Norcal
+    #note: after pulling these, realized that there are 10 new PUMAs in Norcal
     #they all have different geoIDs too
     #ran some stuff in the console, found one new PUMA in each of these counties: 
-    #Sacramento, SF, San Joaquin, Santa Clara, Sonoma, Yolo
+    #Alameda,Sacramento,SF,San Joaquin,Santa Clara,Sonoma,Yolo
     #given this, comparison between PUMAs in these areas will be trickier and may need to be avoided
 
 ncal_pumas_2019 <- ncal_pumas_2019 %>% 
@@ -207,8 +207,13 @@ ncal_pumas_2019 <- ncal_pumas_2019 %>%
     commutepercent_pt = 100*commute_ptE/agg_commute_all_typesE,
   )
 
+
+ncal_counties_2019_2022 <- 
+  full_join(ncal_counties_2019, ncal_counties_2022, by = "GEOID", suffix = c("_2019", "_2022"))
+
+
 #ok, I think what I have for percents with agg are actually just percent of all commuting time...
-#which is actually sort of interesting -- it's showing of total commuting hours, how much is done by car
+#which is actually sort of interesting too -- it is showing total commuting hours, how much is done by car
 
 #could do some 
 top10ncal_counties_2022 <- ncal_counties_2022 %>%
@@ -224,12 +229,12 @@ chart_ncal_counties_test <- ggplot(top10ncal_counties_2022) +
     breaks= seq(0, 15, by=1)
   ) +
   labs(
-    title = "test",
+    title = "2022 test",
     subtitle = "just
     a
     test",
     x = "",
-    y = "% of commutes over 90minutes",
+    y = "% of commutes over 90 minutes",
     caption = "Source: Census Bureau" 
   )+
   theme_minimal() +
@@ -249,12 +254,12 @@ chart_ncal_counties_test2 <- ggplot(top10ncal_counties_2019) +
     breaks= seq(0, 15, by=1)
   ) +
   labs(
-    title = "test",
+    title = "2019 test",
     subtitle = "just
     a
     test",
     x = "",
-    y = "% of commutes over 90minutes",
+    y = "% of commutes over 90 minutes",
     caption = "Source: Census Bureau" 
   )+
   theme_minimal() +
@@ -268,19 +273,53 @@ ncal_counties_2019_clevelanddot <- ncal_counties_2019 %>%
   mutate(NAME = factor(NAME, levels = .$NAME)) %>%
   ggplot(aes(commutepercent_over90, NAME)) +
   geom_point() +
-  scale_x_continuous(expand = expansion(mult = c(0, 0)), limits = c(0, 20)) +
-  labs(x = NULL, 
-       y = "% of commutes lasting longer than 90 minutes")
-ncal_counties_2019_clevelanddot
+  scale_x_continuous(expand = expansion(mult = c(0, 0)), limits = c(0, 15)) +
+  labs(
+    title = "2019 test",
+    subtitle = "just a test",
+    x = NULL, 
+    y = "% of commutes lasting longer than 90 minutes",
+    caption = "Source: Census Bureau")
 
+ncal_counties_2019_clevelanddot
 
 ncal_counties_2022_clevelanddot <- ncal_counties_2022 %>%
   arrange(commutepercent_over90) %>%
   mutate(NAME = factor(NAME, levels = .$NAME)) %>%
   ggplot(aes(commutepercent_over90, NAME)) +
   geom_point() +
-  scale_x_continuous(expand = expansion(mult = c(0, 0)), limits = c(0, 20)) +
-  labs(x = NULL, 
-       y = "% of commutes lasting longer than 90 minutes")
+  scale_x_continuous(expand = expansion(mult = c(0, 0)), limits = c(0, 15)) +
+  labs(
+    title = "2022 test",
+    subtitle = "just a test",
+    x = NULL, 
+    y = "% of commutes lasting longer than 90 minutes",
+    caption = "Source: Census Bureau")
 
 ncal_counties_2022_clevelanddot 
+
+ncal_counties_2019_2022_clevelanddot <- ncal_counties_2019_2022 %>%
+  arrange(commutepercent_over90_2019) %>%
+  mutate(NAME_2019 = factor(NAME_2019, levels = unique(NAME_2019))) %>%
+  ggplot(aes(x = commutepercent_over90_2019, xend = commutepercent_over90_2022, 
+             y = NAME_2019, yend = NAME_2019)) +
+  geom_point(aes(x = commutepercent_over90_2019), 
+             color = "blue", size = 3) +
+  geom_point(aes(x = commutepercent_over90_2022), 
+             color = "darkgreen", size = 3) +
+  geom_segment(color = "darkgrey", linewidth = 1, alpha = 0.5, linetype = "solid",
+               aes(x = commutepercent_over90_2019, xend = commutepercent_over90_2022,
+                   y = NAME_2019, yend = NAME_2019),
+                   arrow = arrow(length = unit(0.3,"cm"),type = "closed")
+               ) +
+  scale_x_continuous(expand = expansion(mult = c(0, 0)), limits = c(0, 15)) +
+  labs(
+    title = "2019-22 test",
+    subtitle = "just a test",
+    x = NULL, 
+    y = "% of commutes lasting longer than 90 minutes",
+    caption = "Source: Census Bureau") +
+  theme(legend.position = "bottom") 
+
+ncal_counties_2019_2022_clevelanddot
+
