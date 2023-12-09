@@ -36,7 +36,6 @@ ncal_counties_2022 <- get_acs(
     income_median = "B19013_001", #Median Household Income in the Past 12 Months (2022 Inflation-Adjusted $)
     poverty_level = "B17009_002", 
     rentburd_median = "B25071_001", #Median gross rent as a percentage of household income 
-    #re-read what this is
     rentburd_total = "B25070_001",  # denominator for rent burden (gross rent as a percentage of household income)
     #check what this denominator is -- % ?  or n count? 
     rentburd_30_35 = "B25070_007", # rent burden 30.0 to 34.9 percent 
@@ -77,7 +76,8 @@ ncal_counties_2022 <- get_acs(
       NAME == "San Benito County, California" |
       NAME == "Monterey County, California" |
       NAME == "Santa Cruz County, California"
-  )
+  ) %>% 
+  mutate()
 
 counties_norcal_megaregion <- 
   "San Francisco|Contra Costa|Marin|Napa|Solano|Sonoma|San Mateo|Santa Clara|Sacramento|Yolo|Yuba|Sutter|Placer|El Dorado|San Joaquin|Stanislaus|Merced|San Benito|Monterey|Santa Cruz"
@@ -99,7 +99,6 @@ ncal_pumas_2022 <- get_acs(
     income_median = "B19013_001", #Median Household Income in the Past 12 Months (2022 Inflation-Adjusted $)
     poverty_level = "B17009_002", 
     rentburd_median = "B25071_001", #Median gross rent as a percentage of household income 
-    #re-read what this is
     rentburd_total = "B25070_001",  # denominator for rent burden (gross rent as a percentage of household income)
     #check what this denominator is -- %? n count? 
     rentburd_30_35 = "B25070_007", # rent burden 30.0 to 34.9 percent 
@@ -138,7 +137,6 @@ ncal_counties_2019 <- get_acs(
     income_median = "B19013_001", #Median Household Income in the Past 12 Months (2022 Inflation-Adjusted $)
     poverty_level = "B17009_002", 
     rentburd_median = "B25071_001", #Median gross rent as a percentage of household income 
-    #re-read what this is
     rentburd_total = "B25070_001",  # denominator for rent burden (gross rent as a percentage of household income)
     #check what this denominator is -- % ?  or n count? 
     rentburd_30_35 = "B25070_007", # rent burden 30.0 to 34.9 percent 
@@ -199,7 +197,6 @@ ncal_pumas_2019 <- get_acs(
     income_median = "B19013_001", #Median Household Income in the Past 12 Months (2022 Inflation-Adjusted $)
     poverty_level = "B17009_002", 
     rentburd_median = "B25071_001", #Median gross rent as a percentage of household income 
-    #re-read what this is
     rentburd_total = "B25070_001",  # denominator for rent burden (gross rent as a percentage of household income)
     #check what this denominator is -- %? n count? 
     rentburd_30_35 = "B25070_007", # rent burden 30.0 to 34.9 percent 
@@ -215,6 +212,11 @@ ncal_pumas_2019 <- get_acs(
   output = "wide") %>% 
   filter(str_detect(NAME, counties_norcal_megaregion)) %>% 
   filter(!str_detect(NAME, "Los Angeles")) 
+#note: after pulling these, realized that there are 6 new PUMAs in Norcal
+#ran some stuff in the console, found one new PUMA in each of these counties: 
+#Sacramento, SF, San Joaquin, Santa Clara, Sonoma, Yolo
+#given this, comparison between PUMAs in these areas will be trickier and may need to be avoided
+
 
 
 #clean names and mutate some variables to create pooled driving times 
