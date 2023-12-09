@@ -18,17 +18,29 @@ variables_2022 <- load_variables(
 #http://www.bayareaeconomy.org/report/the-northern-california-megaregion/ 
 #https://www.spur.org/news/2018-06-19/where-exactly-bay-area
 
+counties_norcal_megaregion <- 
+  "San Francisco|Alameda|Contra Costa|Marin|Napa|Solano|Sonoma|San Mateo|Santa Clara|Sacramento|Yolo|Yuba|Sutter|Placer|El Dorado|San Joaquin|Stanislaus|Merced|San Benito|Monterey|Santa Cruz"
+
+#San Francisco Bay Area (9) 
+#San Francisco,Alameda,Contra Costa,Marin,Napa,Solano,Sonoma,San Mateo,Santa Clara
+#Sacramento Area (6)
+#Sacramento,Yolo,Yuba,Sutter,Placer,El Dorado
+#Northern San Joaquin Valley (3)
+#San Joaquin,Stanislaus,Merced
+#Monterey Bay Area (3)
+#San Benito,Monterey,Santa Cruz
+
 
 ncal_counties_2022 <- get_acs( 
   #pulling northern california megaregion counties, 21 total
   geography = "county",
   variables = c(
-    agg_commute_all_types = "B08136_001",
-    commute_car = "B08136_002",
-    commute_pt = "B08136_007",
-    commute_pt_bus = "B08136_008",
-    commute_pt_shortrail = "B08136_009",
-    commute_pt_longtrain = "B08136_010",
+    agg_commute_all_types = "B08136_001", #too many counties with NA to run for all
+    commute_car = "B08136_002",#too many counties with NA to run for all
+    commute_pt = "B08136_007",#too many counties with NA to run for all
+    commute_pt_bus = "B08136_008",#too many counties with NA to run for all
+    commute_pt_shortrail = "B08136_009",#too many counties with NA to run for all
+    commute_pt_longtrain = "B08136_010",#too many counties with NA to run for all
     commute_average = "B08303_001", #denominator
     commute_60to89 = "B08303_012",
     commute_over_90 = "B08303_013",
@@ -50,37 +62,17 @@ ncal_counties_2022 <- get_acs(
   survey = "acs1",
   output = "wide",
   ) %>% 
-  filter(
-    #San Francisco Bay Area  
-    NAME == "San Francisco County, California" |
-      NAME == "Alameda County, California" |
-      NAME == "Contra Costa County, California" |
-      NAME == "Marin County, California" |
-      NAME == "Napa County, California" |
-      NAME == "Solano County, California" |
-      NAME == "Sonoma County, California" |
-      NAME == "San Mateo County, California" |
-      NAME == "Santa Clara County, California" |
-      #Sacramento Area
-      NAME == "Sacramento County, California" |
-      NAME == "Yolo County, California" |
-      NAME == "Yuba County, California" |
-      NAME == "Sutter County, California" |
-      NAME == "Placer County, California" |
-      NAME == "El Dorado County, California" |
-      #Northern San Joaquin Valley
-      NAME == "San Joaquin County, California" |
-      NAME == "Stanislaus County, California" |
-      NAME == "Merced County, California" |
-      #Monterey Bay Area
-      NAME == "San Benito County, California" |
-      NAME == "Monterey County, California" |
-      NAME == "Santa Cruz County, California"
-  ) %>% 
-  mutate()
+  filter(str_detect(NAME, counties_norcal_megaregion))
+ 
 
-counties_norcal_megaregion <- 
-  "San Francisco|Contra Costa|Marin|Napa|Solano|Sonoma|San Mateo|Santa Clara|Sacramento|Yolo|Yuba|Sutter|Placer|El Dorado|San Joaquin|Stanislaus|Merced|San Benito|Monterey|Santa Cruz"
+ncal_counties_2022 <- ncal_counties_2022 %>% 
+  mutate(
+    commutepercent_over60 = 100*(commute_60to89E+commute_over_90E)/commute_averageE,
+    commutepercent_over90 = 100*commute_over_90E/commute_averageE,
+    commutepercent_car = 100*commute_carE/agg_commute_all_typesE,
+    commutepercent_pt = 100*commute_ptE/agg_commute_all_typesE,
+  )
+
 
 #filter for the specific pumas in norcal megaregion
 ncal_pumas_2022 <- get_acs(
@@ -116,6 +108,14 @@ ncal_pumas_2022 <- get_acs(
   filter(!str_detect(NAME, "Los Angeles")) 
    #^because of "Marin" the filter above was pulling two LA counties with "Marina"
 
+ncal_pumas_2022 <- ncal_pumas_2022 %>% 
+  mutate(
+    #non-normalized
+    commutepercent_over60 = 100*(commute_60to89E+commute_over_90E)/commute_averageE,
+    commutepercent_over90 = 100*commute_over_90E/commute_averageE,
+    commutepercent_car = 100*commute_carE/agg_commute_all_typesE,
+    commutepercent_pt = 100*commute_ptE/agg_commute_all_typesE
+  )
 
 #now re-running with copied code from above but pulling pre-pandemic data
 #acs 5-year 2015-2019
@@ -124,12 +124,12 @@ ncal_counties_2019 <- get_acs(
   #pulling northern california megaregion counties, 21 total
   geography = "county",
   variables = c(
-    agg_commute_all_types = "B08136_001",
-    commute_car = "B08136_002",
-    commute_pt = "B08136_007",
-    commute_pt_bus = "B08136_008",
-    commute_pt_shortrail = "B08136_009",
-    commute_pt_longtrain = "B08136_010",
+    agg_commute_all_types = "B08136_001",#too many counties with NA to run for all
+    commute_car = "B08136_002",#too many counties with NA to run for all
+    commute_pt = "B08136_007",#too many counties with NA to run for all
+    commute_pt_bus = "B08136_008",#too many counties with NA to run for all
+    commute_pt_shortrail = "B08136_009",#too many counties with NA to run for all
+    commute_pt_longtrain = "B08136_010",#too many counties with NA to run for all
     commute_average = "B08303_001", #denominator
     commute_60to89 = "B08303_012",
     commute_over_90 = "B08303_013",
@@ -151,34 +151,15 @@ ncal_counties_2019 <- get_acs(
   survey = "acs5",
   output = "wide",
 ) %>% 
-  filter(
-    #San Francisco Bay Area  
-    NAME == "San Francisco County, California" |
-      NAME == "Alameda County, California" |
-      NAME == "Contra Costa County, California" |
-      NAME == "Marin County, California" |
-      NAME == "Napa County, California" |
-      NAME == "Solano County, California" |
-      NAME == "Sonoma County, California" |
-      NAME == "San Mateo County, California" |
-      NAME == "Santa Clara County, California" |
-      #Sacramento Area
-      NAME == "Sacramento County, California" |
-      NAME == "Yolo County, California" |
-      NAME == "Yuba County, California" |
-      NAME == "Sutter County, California" |
-      NAME == "Placer County, California" |
-      NAME == "El Dorado County, California" |
-      #Northern San Joaquin Valley
-      NAME == "San Joaquin County, California" |
-      NAME == "Stanislaus County, California" |
-      NAME == "Merced County, California" |
-      #Monterey Bay Area
-      NAME == "San Benito County, California" |
-      NAME == "Monterey County, California" |
-      NAME == "Santa Cruz County, California"
-  )
+  filter(str_detect(NAME, counties_norcal_megaregion))
 
+ncal_counties_2019 <- ncal_counties_2019 %>% 
+  mutate(
+    commutepercent_over60 = 100*(commute_60to89E+commute_over_90E)/commute_averageE,
+    commutepercent_over90 = 100*commute_over_90E/commute_averageE,
+    commutepercent_car = 100*commute_carE/agg_commute_all_typesE,
+    commutepercent_pt = 100*commute_ptE/agg_commute_all_typesE,
+  )
 
 #filter for the specific pumas in norcal megaregion
 ncal_pumas_2019 <- get_acs(
@@ -212,12 +193,45 @@ ncal_pumas_2019 <- get_acs(
   output = "wide") %>% 
   filter(str_detect(NAME, counties_norcal_megaregion)) %>% 
   filter(!str_detect(NAME, "Los Angeles")) 
-#note: after pulling these, realized that there are 6 new PUMAs in Norcal
-#ran some stuff in the console, found one new PUMA in each of these counties: 
-#Sacramento, SF, San Joaquin, Santa Clara, Sonoma, Yolo
-#given this, comparison between PUMAs in these areas will be trickier and may need to be avoided
+    #note: after pulling these, realized that there are 6 new PUMAs in Norcal
+    #ran some stuff in the console, found one new PUMA in each of these counties: 
+    #Sacramento, SF, San Joaquin, Santa Clara, Sonoma, Yolo
+    #given this, comparison between PUMAs in these areas will be trickier and may need to be avoided
 
+ncal_pumas_2019 <- ncal_pumas_2019 %>% 
+  mutate(
+    commutepercent_over60 = 100*(commute_60to89E+commute_over_90E)/commute_averageE,
+    commutepercent_over90 = 100*commute_over_90E/commute_averageE,
+    commutepercent_car = 100*commute_carE/agg_commute_all_typesE,
+    commutepercent_pt = 100*commute_ptE/agg_commute_all_typesE,
+  )
 
+#ok, I think what I have for percents with agg are actually just percent of all commuting time...
+#which is actually sort of interesting -- it's showing of total commuting hours, how much is done by car
 
-#clean names and mutate some variables to create pooled driving times 
-  
+#could do some 
+top10ncal_counties_2022 <- ncal_counties_2022 %>%
+  top_n(10, wt = commutepercent_over90)
+
+#exploratory ggplotting
+chart_ncal_counties_test <- ggplot(top10ncal_counties_2022) +
+  geom_col( 
+    aes(y = commutepercent_over90,x=NAME)) +
+  scale_y_continuous(
+    limits = c(0,15),
+    labels = scales::number_format(scale = 1, big.mark = ""),
+    breaks= seq(0, 15, by=1)
+  ) +
+  labs(
+    title = "test",
+    subtitle = "just
+    a
+    test",
+    x = "",
+    y = "% of commutes over 90minutes",
+    caption = "Source: Census Bureau" 
+  )+
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+chart_ncal_counties_test
