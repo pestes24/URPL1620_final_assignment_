@@ -71,6 +71,7 @@ ncal_counties_2022 <- ncal_counties_2022 %>%
     commutepercent_over90 = 100*commute_over_90E/commute_averageE,
     commutepercent_car = 100*commute_carE/agg_commute_all_typesE,
     commutepercent_pt = 100*commute_ptE/agg_commute_all_typesE,
+    rb_over30_percent = 100*(rentburd_30_35E+rentburd_35_40E+rentburd_40_50E+rentburd_over_50E)/(rentburd_totalE-rentburd_subtractE),
     NAME = str_remove(NAME, "County, California")
   )
 
@@ -116,7 +117,7 @@ ncal_pumas_2022 <- ncal_pumas_2022 %>%
     commutepercent_over90 = 100*commute_over_90E/commute_averageE,
     commutepercent_car = 100*commute_carE/agg_commute_all_typesE,
     commutepercent_pt = 100*commute_ptE/agg_commute_all_typesE,
-    NAME = str_remove(NAME, "County, California")
+    rb_over30_percent = 100*(rentburd_30_35E+rentburd_35_40E+rentburd_40_50E+rentburd_over_50E)/(rentburd_totalE-rentburd_subtractE)
   )
 
 #now re-running with copied code from above but pulling pre-pandemic data
@@ -161,6 +162,7 @@ ncal_counties_2019 <- ncal_counties_2019 %>%
     commutepercent_over90 = 100*commute_over_90E/commute_averageE,
     commutepercent_car = 100*commute_carE/agg_commute_all_typesE,
     commutepercent_pt = 100*commute_ptE/agg_commute_all_typesE,
+    rb_over30_percent = 100*(rentburd_30_35E+rentburd_35_40E+rentburd_40_50E+rentburd_over_50E)/(rentburd_totalE-rentburd_subtractE),
     NAME = str_remove(NAME, "County, California")
   )
 
@@ -208,12 +210,17 @@ ncal_pumas_2019 <- ncal_pumas_2019 %>%
     commutepercent_over90 = 100*commute_over_90E/commute_averageE,
     commutepercent_car = 100*commute_carE/agg_commute_all_typesE,
     commutepercent_pt = 100*commute_ptE/agg_commute_all_typesE,
-    NAME = str_remove(NAME, "County, California")
+    rb_over30_percent = 100*(rentburd_30_35E+rentburd_35_40E+rentburd_40_50E+rentburd_over_50E)/(rentburd_totalE-rentburd_subtractE)
   )
 
 
 ncal_counties_2019_2022 <- 
-  full_join(ncal_counties_2019, ncal_counties_2022, by = "GEOID", suffix = c("_2019", "_2022"))
+  full_join(ncal_counties_2019, ncal_counties_2022, by = "GEOID", suffix = c("_2019", "_2022")) %>% 
+  mutate(
+    commute_over90_diff = commutepercent_over90_2022-commutepercent_over90_2019,
+    rb_median_diff = rentburd_medianE_2022-rentburd_medianE_2019,
+    rb_over30_diff = rb_over30_percent_2022-rb_over30_percent_2019
+  )
 
 
 #ok, I think what I have for percents with agg are actually just percent of all commuting time...
@@ -327,7 +334,22 @@ ncal_counties_2019_2022_clevelanddot <- ncal_counties_2019_2022 %>%
     y = "% of commutes lasting longer than 90 minutes",
     caption = "Source: Census Bureau") +
   theme_minimal()
+ncal_counties_2019_2022_clevelanddot
 #will have to return and add legend
 
-ncal_counties_2019_2022_clevelanddot
 
+#testing out some scatterplots
+scatter_diff_rb_supercommute <- ncal_counties_2019_2022 %>%
+  ggplot(aes(x = rb_over30_diff, y = commute_over90_diff)) +
+  geom_point() +
+  scale_x_continuous(expand = expansion(mult = c(0.002, 0)), 
+                     limits = c(-5, 10),
+                     breaks = -5:10) +
+  scale_y_continuous(expand = expansion(mult = c(0, 0.002)), 
+                     limits = c(-5, 5),
+                     breaks = -15:15 * 5) +
+  labs(x = "Change in Rent Burden Over 30%)",
+       y = "Change in Supercommutes") +
+  scatter_grid()
+
+scatter_diff_rb_supercommute
