@@ -72,6 +72,7 @@ ncal_counties_2022 <- ncal_counties_2022 %>%
     commutepercent_car = 100*commute_carE/agg_commute_all_typesE,
     commutepercent_pt = 100*commute_ptE/agg_commute_all_typesE,
     rb_over30_percent = 100*(rentburd_30_35E+rentburd_35_40E+rentburd_40_50E+rentburd_over_50E)/(rentburd_totalE-rentburd_subtractE),
+    poverty_levelpercent = 100*poverty_levelE/total_popE,
     NAME = str_remove(NAME, "County, California")
   )
 
@@ -163,6 +164,7 @@ ncal_counties_2019 <- ncal_counties_2019 %>%
     commutepercent_car = 100*commute_carE/agg_commute_all_typesE,
     commutepercent_pt = 100*commute_ptE/agg_commute_all_typesE,
     rb_over30_percent = 100*(rentburd_30_35E+rentburd_35_40E+rentburd_40_50E+rentburd_over_50E)/(rentburd_totalE-rentburd_subtractE),
+    poverty_levelpercent = 100*poverty_levelE/total_popE,
     NAME = str_remove(NAME, "County, California")
   )
 
@@ -213,13 +215,15 @@ ncal_pumas_2019 <- ncal_pumas_2019 %>%
     rb_over30_percent = 100*(rentburd_30_35E+rentburd_35_40E+rentburd_40_50E+rentburd_over_50E)/(rentburd_totalE-rentburd_subtractE)
   )
 
-
+#joining to do comparisons and create some new variables
 ncal_counties_2019_2022 <- 
   full_join(ncal_counties_2019, ncal_counties_2022, by = "GEOID", suffix = c("_2019", "_2022")) %>% 
   mutate(
     commute_over90_diff = commutepercent_over90_2022-commutepercent_over90_2019,
     rb_median_diff = rentburd_medianE_2022-rentburd_medianE_2019,
-    rb_over30_diff = rb_over30_percent_2022-rb_over30_percent_2019
+    rb_over30_diff = rb_over30_percent_2022-rb_over30_percent_2019,
+    poverty_levelpercent_diff = poverty_levelpercent_2022-poverty_levelpercent_2019,
+    total_pop_percent_diff = 100*(total_popE_2022 - total_popE_2019)/total_popE_2019
   )
 
 
@@ -339,11 +343,12 @@ ncal_counties_2019_2022_clevelanddot
 
 
 #testing out some scatterplots
-scatter_diff_rb_supercommute <- ncal_counties_2019_2022 %>%
-  ggplot(aes(x = rb_over30_diff, y = commute_over90_diff)) +
+#not much here for supercommute change vs pl change or housing burden change
+scatter_diff_pop_supercommute <- ncal_counties_2019_2022 %>%
+  ggplot(aes(x = total_pop_percent_diff, y = commute_over90_diff)) +
   geom_point() +
   scale_x_continuous(expand = expansion(mult = c(0.002, 0)), 
-                     limits = c(-5, 10),
+                     limits = c(-10, 15),
                      breaks = -5:10) +
   scale_y_continuous(expand = expansion(mult = c(0, 0.002)), 
                      limits = c(-5, 5),
@@ -352,4 +357,4 @@ scatter_diff_rb_supercommute <- ncal_counties_2019_2022 %>%
        y = "Change in Supercommutes") +
   scatter_grid()
 
-scatter_diff_rb_supercommute
+scatter_diff_pl_supercommute
