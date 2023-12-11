@@ -285,15 +285,47 @@ ncal_counties_2019_2022_clevelanddot <- ncal_counties_2019_2022 %>%
     title = "Change in % of supercommutes",
     subtitle = "In Northern California counties, 2019 vs 2022",
     x = "% of commutes lasting longer than 90 minutes", 
-    y = "County",
+    y = "",
     caption = "Source: Census Bureau") +
   theme_minimal()
 ncal_counties_2019_2022_clevelanddot
 #will have to return and add legend
 
+ncal_counties_2019_2022_longcarcommutes_clevelanddot <- ncal_counties_2019_2022 %>%
+  arrange(commutepercent_by_car_over60_2019) %>%
+  mutate(NAME_2019 = factor(NAME_2019, levels = unique(NAME_2019))) %>%
+  ggplot(aes(x = commutepercent_by_car_over60_2019, xend = commutepercent_by_car_over60_2022, 
+             y = NAME_2019, yend = NAME_2019)) +
+  geom_point(aes(x = commutepercent_by_car_over60_2019), 
+             color = "blue", size = 2) +
+  geom_point(aes(x = commutepercent_by_car_over60_2022), 
+             color = "darkgreen", size = 2) +
+  geom_segment(color = "darkgrey", linewidth = 1, alpha = 0.5, linetype = "solid",
+               aes(x = commutepercent_by_car_over60_2019, xend = commutepercent_by_car_over60_2022,
+                   y = NAME_2019, yend = NAME_2019),
+               arrow = arrow(length = unit(0.25,"cm"),
+                             type = "closed", 
+                             angle=25),
+               arrow.fill = "darkgrey", 
+  ) +
+  scale_x_continuous(expand = expansion(mult = c(0, 0)), limits = c(0, 25)) +
+  labs(
+    title = "Change in % of long car commutes",
+    subtitle = "In Northern California counties, 2019 vs 2022",
+    x = "% of car commutes lasting longer than 60 minutes", 
+    y = "",
+    caption = "Source: Census Bureau") +
+  theme_minimal()
+ncal_counties_2019_2022_longcarcommutes_clevelanddot
 
-#tested out some scatterplots, saved in unused code file
+#will have to return and add legend
+#    commutepercent_by_car_over60_diff = commutepercent_by_car_over60_2022-commutepercent_by_car_over60_2019,
+#    commutepercent_car_diff = commutepercent_car_2022-commutepercent_car_2019
+
+
+#alsotested out some scatterplots, saved in unused code file
 #not much here for ...
 #supercommute change vs poverty level change  
 #supercommute change vs housing burden change
 #supercommute change vs pop change
+#moving to QGIS for mapping
