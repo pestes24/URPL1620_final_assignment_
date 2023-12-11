@@ -35,12 +35,18 @@ ncal_counties_2022 <- get_acs(
   #pulling northern california megaregion counties, 21 total
   geography = "county",
   variables = c(
-    agg_commute_all_types = "B08136_001", #too many counties with NA to run for all
-    commute_car = "B08136_002",#too many counties with NA to run for all
-    commute_pt = "B08136_007",#too many counties with NA to run for all
-    commute_pt_bus = "B08136_008",#too many counties with NA to run for all
-    commute_pt_shortrail = "B08136_009",#too many counties with NA to run for all
-    commute_pt_longtrain = "B08136_010",#too many counties with NA to run for all
+    commuters_total = "B08134_001",#denominator
+    commutes_over60 = "B08134_010",#highest subset available for this stub
+    commutes_by_car = "B08134_011",#Car, truck, or van
+    commutes_by_car_over60 = "B08134_020",#Car, truck, or van
+    commutes_by_pt = "B08134_061",#Public transportation (excluding taxicab)
+    commutes_by_pt_over60 = "B08134_070",#Car, truck, or van
+    commutes_by_pt_bus = "B08134_071",#
+    commutes_by_pt_bus_over60 = "B08134_080",#
+    commutes_by_pt_shortrail = "B08134_081",#Subway or elevated rail, Light rail, streetcar, or trolley
+    commutes_by_pt_shortrail_over60 = "B08134_090",#
+    commutes_by_pt_longrail = "B08134_091",# Long-distance train or commuter rail or Ferryboat
+    commutes_by_pt_longrail_over60 = "B08134_100",#
     commute_average = "B08303_001", #denominator
     commute_60to89 = "B08303_012",
     commute_over_90 = "B08303_013",
@@ -81,12 +87,6 @@ ncal_counties_2022 <- ncal_counties_2022 %>%
 ncal_pumas_2022 <- get_acs(
   geography = "public use microdata area",
   variables = c(
-    agg_commute_all_types = "B08136_001", #too many PUMAs with NA to run for all
-    commute_car = "B08136_002", #too many PUMAs with NA to run for all
-    commute_pt = "B08136_007", #too many PUMAs with NA to run for all
-    commute_pt_bus = "B08136_008", #too many PUMAs with NA to run for all
-    commute_pt_shortrail = "B08136_009", #too many PUMAs with NA to run for all
-    commute_pt_longtrain = "B08136_010", #too many PUMAs with NA to run for all
     commute_average = "B08303_001", #denominator
     commute_60to89 = "B08303_012",
     commute_over_90 = "B08303_013",
@@ -128,12 +128,6 @@ ncal_counties_2019 <- get_acs(
   #pulling northern california megaregion counties, 21 total
   geography = "county",
   variables = c(
-    agg_commute_all_types = "B08136_001",#too many counties with NA to run for all
-    commute_car = "B08136_002",#too many counties with NA to run for all
-    commute_pt = "B08136_007",#too many counties with NA to run for all
-    commute_pt_bus = "B08136_008",#too many counties with NA to run for all
-    commute_pt_shortrail = "B08136_009",#too many counties with NA to run for all
-    commute_pt_longtrain = "B08136_010",#too many counties with NA to run for all
     commute_average = "B08303_001", #denominator
     commute_60to89 = "B08303_012",
     commute_over_90 = "B08303_013",
@@ -172,12 +166,7 @@ ncal_counties_2019 <- ncal_counties_2019 %>%
 ncal_pumas_2019 <- get_acs(
   geography = "public use microdata area",
   variables = c(
-    agg_commute_all_types = "B08136_001", #too many PUMAs with NA to run for all
-    commute_car = "B08136_002", #too many PUMAs with NA to run for all
-    commute_pt = "B08136_007", #too many PUMAs with NA to run for all
-    commute_pt_bus = "B08136_008", #too many PUMAs with NA to run for all
-    commute_pt_shortrail = "B08136_009", #too many PUMAs with NA to run for all
-    commute_pt_longtrain = "B08136_010", #too many PUMAs with NA to run for all
+
     commute_average = "B08303_001", #denominator
     commute_60to89 = "B08303_012",
     commute_over_90 = "B08303_013",
@@ -230,7 +219,6 @@ ncal_counties_2019_2022 <-
 #ok, I think what I have for percents with agg are actually just percent of all commuting time...
 #which is actually sort of interesting too -- it is showing total commuting hours, how much is done by car
 
-#could do some 
 top10ncal_counties_2022 <- ncal_counties_2022 %>%
   top_n(10, wt = commutepercent_over90)
 
@@ -342,8 +330,12 @@ ncal_counties_2019_2022_clevelanddot
 #will have to return and add legend
 
 
-#testing out some scatterplots
-#not much here for supercommute change vs pl change or housing burden change
+#tested out some scatterplots, saved in unused code file
+#not much here for ...
+#supercommute change vs poverty level change  
+#supercommute change vs housing burden change
+#supercommute change vs pop change
+
 scatter_diff_pop_supercommute <- ncal_counties_2019_2022 %>%
   ggplot(aes(x = total_pop_percent_diff, y = commute_over90_diff)) +
   geom_point() +
@@ -357,4 +349,4 @@ scatter_diff_pop_supercommute <- ncal_counties_2019_2022 %>%
        y = "Change in Supercommutes") +
   scatter_grid()
 
-scatter_diff_pl_supercommute
+scatter_diff_pop_supercommute
