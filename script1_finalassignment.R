@@ -178,6 +178,19 @@ ncal_counties_2019_2022 <-
 ncal_counties_2019_2022 %>% 
   write_csv(file = "ncal_counties_2019_2022.csv")
 
+ncalcounties_over90_average_percentchange_2019_2022 <- ncal_counties_2019_2022 %>%
+  summarize(commute_over90_average_percentchange=mean(commute_over90_diff,na.rm=TRUE),
+            commute_over90_median_percentchange=median(commute_over90_diff,na.rm=TRUE),
+                   n=n()) 
+
+ncalcounties_over90_by_workplace_average_percentchange_2019_2022 <- ncal_counties_2019_2022%>% 
+  summarize(commute_over90_by_workplace_average_percentchange=mean(commutepercent_over90_by_workplace_diff,na.rm=TRUE),
+            commute_over90_by_workplace_median_percentchange=median(commutepercent_over90_by_workplace_diff,na.rm=TRUE),
+            n=n())
+
+ncalcounties_summarystats_2019_2022 <- cbind(ncalcounties_over90_by_workplace_average_percentchange_2019_2022, ncalcounties_over90_average_percentchange_2019_2022) %>% 
+  write_csv(file = "ncalcounties_summarystats_2019_2022.csv")
+
 #ok, I think what I have for percents with agg are actually just percent of all commuting time...
 #which is actually sort of interesting too -- it is showing total commuting hours, how much is done by car
 
