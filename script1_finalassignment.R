@@ -96,72 +96,6 @@ ncal_counties_2022 <- ncal_counties_2022 %>%
     NAME = str_remove(NAME, "County, California")
   )
 
-
-#filter for the specific pumas in norcal megaregion
-ncal_pumas_2022 <- get_acs(
-  geography = "public use microdata area",
-  variables = c(
-    commutes_total = "B08134_001",#denominator
-    commutes_over60 = "B08134_010",#highest subset available for this stub
-    commutes_by_car = "B08134_011",#Car, truck, or van
-    commutes_by_car_over60 = "B08134_020",
-    commutes_by_pt = "B08134_061",#Public transportation (excluding taxicab)
-    commutes_by_pt_over60 = "B08134_070",
-    commutes_by_pt_bus = "B08134_071",
-    commutes_by_pt_bus_over60 = "B08134_080",
-    commutes_by_pt_shortrail = "B08134_081",#Subway or elevated rail, Light rail, streetcar, or trolley
-    commutes_by_pt_shortrail_over60 = "B08134_090",
-    commutes_by_pt_longrail = "B08134_091",# Long-distance train or commuter rail or Ferryboat
-    commutes_by_pt_longrail_over60 = "B08134_100",
-    #for all above this line, lots of counties with missing data so should be cautious in comparing
-    commutes_total_by_workplace ="B08412_001", #by destination of commute, denominator 
-    commutes_by_workplace_over90 = "B08412_013",#by destination of commute
-    commute_average = "B08303_001", #denominator
-    commute_60to89 = "B08303_012",
-    commute_over_90 = "B08303_013",
-    income_percap = "B19301_001", #per Capita Income in the Past 12 Months (2022 Inflation-Adjusted $)
-    income_median = "B19013_001", #Median Household Income in the Past 12 Months (2022 Inflation-Adjusted $)
-    poverty_level = "B17009_002", 
-    rentburd_median = "B25071_001", #Median gross rent as a percentage of household income 
-    rentburd_total = "B25070_001",  # denominator for rent burden (gross rent as a percentage of household income)
-    #check what this denominator is -- %? n count? 
-    rentburd_30_35 = "B25070_007", # rent burden 30.0 to 34.9 percent 
-    rentburd_35_40 = "B25070_008",  # rent burden 35.0 to 39.9 percent
-    rentburd_40_50 = "B25070_009",  # rent burden 40.0 to 49.9 percent
-    rentburd_over_50 = "B25070_010",  # rent burden 50.0 percent or more
-    rentburd_subtract = "B25070_011",  # not computed; subtract from denominator
-    total_pop = "B01001_001" #total population, from sex by age
-  ),
-  state = "California",
-  year = 2022,
-  survey = "acs1",
-  output = "wide") %>% 
-  filter(str_detect(NAME, counties_norcal_megaregion)) %>% 
-  filter(!str_detect(NAME, "Los Angeles")) 
-   #^because of "Marin" the filter above was pulling two LA counties with "Marina"
-
-ncal_pumas_2022 <- ncal_pumas_2022 %>% 
-  mutate(
-    commutepercent_over60 = 100*(commute_60to89E+commute_over_90E)/commute_averageE,
-    commutepercent_over90 = 100*commute_over_90E/commute_averageE,
-    #of all commutes, what % are done by...
-    commutepercent_car = 100*commutes_by_carE/commutes_totalE,
-    commutepercent_pt = 100*commutes_by_ptE/commutes_totalE,
-    commutepercent_by_pt_bus = 100*commutes_by_pt_busE/commutes_totalE,
-    commutepercent_by_pt_shortrail = 100*commutes_by_pt_shortrailE/commutes_totalE,
-    commutepercent_by_pt_longrail = 100*commutes_by_pt_longrailE/commutes_totalE,
-    #within each type of commute, what % take over 60 min?
-    commutepercent_by_car_over60 = 100*commutes_by_car_over60E/commutes_by_carE,   
-    commutepercent_by_pt_over60 = 100*commutes_by_pt_over60E/commutes_by_ptE, 
-    commutepercent_by_pt_bus_over60 = 100*commutes_by_pt_bus_over60E/commutes_by_pt_busE,
-    commutepercent_by_pt_shortrail_over60 = 100*commutes_by_pt_shortrail_over60E/commutes_by_pt_shortrailE,
-    commutepercent_by_pt_longrail_over60 = 100*commutes_by_pt_longrail_over60E/commutes_by_pt_longrailE,
-    commutepercent_over90_by_workplace = 100*commutes_by_workplace_over90E/commutes_total_by_workplaceE,
-    rb_over30_percent = 100*(rentburd_30_35E+rentburd_35_40E+rentburd_40_50E+rentburd_over_50E)/(rentburd_totalE-rentburd_subtractE),
-    poverty_levelpercent = 100*poverty_levelE/total_popE,
-    NAME = str_remove(NAME, "County, California")
-  )
-
 #now re-running with copied code from above but pulling pre-pandemic data
 #acs 5-year 2015-2019
 
@@ -229,75 +163,6 @@ ncal_counties_2019 <- ncal_counties_2019 %>%
     NAME = str_remove(NAME, "County, California")
   )
 
-#filter for the specific pumas in norcal megaregion
-ncal_pumas_2019 <- get_acs(
-  geography = "public use microdata area",
-  variables = c(
-    commutes_total = "B08134_001",#denominator
-    commutes_over60 = "B08134_010",#highest subset available for this stub
-    commutes_by_car = "B08134_011",#Car, truck, or van
-    commutes_by_car_over60 = "B08134_020",
-    commutes_by_pt = "B08134_061",#Public transportation (excluding taxicab)
-    commutes_by_pt_over60 = "B08134_070",
-    commutes_by_pt_bus = "B08134_071",
-    commutes_by_pt_bus_over60 = "B08134_080",
-    commutes_by_pt_shortrail = "B08134_081",#Subway or elevated rail, Light rail, streetcar, or trolley
-    commutes_by_pt_shortrail_over60 = "B08134_090",
-    commutes_by_pt_longrail = "B08134_091",# Long-distance train or commuter rail or Ferryboat
-    commutes_by_pt_longrail_over60 = "B08134_100",
-    #for all above this line, lots of counties with missing data so should be cautious in comparing
-    commutes_total_by_workplace ="B08412_001", #by destination of commute, denominator 
-    commutes_by_workplace_over90 = "B08412_013",#by destination of commute
-    commute_average = "B08303_001", #denominator
-    commute_60to89 = "B08303_012",
-    commute_over_90 = "B08303_013",
-    income_percap = "B19301_001", #per Capita Income in the Past 12 Months (2022 Inflation-Adjusted $)
-    income_median = "B19013_001", #Median Household Income in the Past 12 Months (2022 Inflation-Adjusted $)
-    poverty_level = "B17009_002", 
-    rentburd_median = "B25071_001", #Median gross rent as a percentage of household income 
-    rentburd_total = "B25070_001",  # denominator for rent burden (gross rent as a percentage of household income)
-    #check what this denominator is -- %? n count? 
-    rentburd_30_35 = "B25070_007", # rent burden 30.0 to 34.9 percent 
-    rentburd_35_40 = "B25070_008",  # rent burden 35.0 to 39.9 percent
-    rentburd_40_50 = "B25070_009",  # rent burden 40.0 to 49.9 percent
-    rentburd_over_50 = "B25070_010",  # rent burden 50.0 percent or more
-    rentburd_subtract = "B25070_011",  # not computed; subtract from denominator
-    total_pop = "B01001_001" #total population, from sex by age
-  ),
-  state = "California",
-  year = 2019,
-  survey = "acs5",
-  output = "wide") %>% 
-  filter(str_detect(NAME, counties_norcal_megaregion)) %>% 
-  filter(!str_detect(NAME, "Los Angeles")) 
-    #note: after pulling these, realized that there are 10 new PUMAs in Norcal
-    #they all have different geoIDs too
-    #ran some stuff in the console, found one new PUMA in each of these counties: 
-    #Alameda,Sacramento,SF,San Joaquin,Santa Clara,Sonoma,Yolo
-    #given this, comparison between PUMAs in these areas will be trickier and may need to be avoided
-
-ncal_pumas_2019 <- ncal_pumas_2019 %>% 
-  mutate(
-    commutepercent_over60 = 100*(commute_60to89E+commute_over_90E)/commute_averageE,
-    commutepercent_over90 = 100*commute_over_90E/commute_averageE,
-    #of all commutes, what % are done by...
-    commutepercent_car = 100*commutes_by_carE/commutes_totalE,
-    commutepercent_pt = 100*commutes_by_ptE/commutes_totalE,
-    commutepercent_by_pt_bus = 100*commutes_by_pt_busE/commutes_totalE,
-    commutepercent_by_pt_shortrail = 100*commutes_by_pt_shortrailE/commutes_totalE,
-    commutepercent_by_pt_longrail = 100*commutes_by_pt_longrailE/commutes_totalE,
-    #within each type of commute, what % take over 60 min?
-    commutepercent_by_car_over60 = 100*commutes_by_car_over60E/commutes_by_carE,   
-    commutepercent_by_pt_over60 = 100*commutes_by_pt_over60E/commutes_by_ptE, 
-    commutepercent_by_pt_bus_over60 = 100*commutes_by_pt_bus_over60E/commutes_by_pt_busE,
-    commutepercent_by_pt_shortrail_over60 = 100*commutes_by_pt_shortrail_over60E/commutes_by_pt_shortrailE,
-    commutepercent_by_pt_longrail_over60 = 100*commutes_by_pt_longrail_over60E/commutes_by_pt_longrailE,
-    commutepercent_over90_by_workplace = 100*commutes_by_workplace_over90E/commutes_total_by_workplaceE,
-    rb_over30_percent = 100*(rentburd_30_35E+rentburd_35_40E+rentburd_40_50E+rentburd_over_50E)/(rentburd_totalE-rentburd_subtractE),
-    poverty_levelpercent = 100*poverty_levelE/total_popE,
-    NAME = str_remove(NAME, "County, California")
-  )
-
 #joining to do comparisons and create some new variables
 ncal_counties_2019_2022 <- 
   full_join(ncal_counties_2019, ncal_counties_2022, by = "GEOID", suffix = c("_2019", "_2022")) %>% 
@@ -306,9 +171,12 @@ ncal_counties_2019_2022 <-
     rb_median_diff = rentburd_medianE_2022-rentburd_medianE_2019,
     rb_over30_diff = rb_over30_percent_2022-rb_over30_percent_2019,
     poverty_levelpercent_diff = poverty_levelpercent_2022-poverty_levelpercent_2019,
-    total_pop_percent_diff = 100*(total_popE_2022 - total_popE_2019)/total_popE_2019
+    total_pop_percent_diff = 100*(total_popE_2022 - total_popE_2019)/total_popE_2019,
+    commutepercent_over90_by_workplace_diff = commutepercent_over90_by_workplace_2022-commutepercent_over90_by_workplace_2019,
   )
 
+ncal_counties_2019_2022 %>% 
+  write_csv(file = "ncal_counties_2019_2022.csv")
 
 #ok, I think what I have for percents with agg are actually just percent of all commuting time...
 #which is actually sort of interesting too -- it is showing total commuting hours, how much is done by car
@@ -342,7 +210,7 @@ chart_ncal_counties_test
 top10ncal_counties_2019 <- ncal_counties_2019 %>%
   top_n(10, wt = commutepercent_over90)
 
-chart_ncal_counties_test2 <- ggplot(top10ncal_counties_2019) +
+barchart_ncal_counties <- ggplot(top10ncal_counties_2019) +
   geom_col( 
     aes(x = reorder(NAME, -commutepercent_over90), y = commutepercent_over90)) +
   scale_y_continuous(
@@ -356,7 +224,7 @@ chart_ncal_counties_test2 <- ggplot(top10ncal_counties_2019) +
     a
     test",
     x = "",
-    y = "% of commutes over 90 minutes",
+    y = "% of commutes lasting longer than 90 minutes",
     caption = "Source: Census Bureau" 
   )+
   theme_minimal() +
@@ -414,10 +282,10 @@ ncal_counties_2019_2022_clevelanddot <- ncal_counties_2019_2022 %>%
                ) +
   scale_x_continuous(expand = expansion(mult = c(0, 0)), limits = c(0, 15)) +
   labs(
-    title = "2019-22 test",
-    subtitle = "just a test",
-    x = NULL, 
-    y = "% of commutes lasting longer than 90 minutes",
+    title = "Change in % of supercommutes",
+    subtitle = "In Northern California counties, 2019 vs 2022",
+    x = "% of commutes lasting longer than 90 minutes", 
+    y = "County",
     caption = "Source: Census Bureau") +
   theme_minimal()
 ncal_counties_2019_2022_clevelanddot
