@@ -9,8 +9,23 @@ variables = c(
   agg_commute_pt_shortrail = "B08136_009",#too many counties with NA to run for all
   agg_commute_pt_longtrain = "B08136_010",#too many counties with NA to run for all
 
+#clevelanddot chart for 2022
+  ncal_counties_2022_clevelanddot <- ncal_counties_2022 %>%
+    arrange(commutepercent_over90) %>%
+    mutate(NAME = factor(NAME, levels = unique(NAME))) %>%
+    ggplot(aes(commutepercent_over90, NAME),
+           color = "blue", size = 2) +
+    geom_point() +
+    scale_x_continuous(expand = expansion(mult = c(0, 0)), limits = c(0, 15)) +
+    labs(
+      title = "2022 test",
+      subtitle = "just a test",
+      x = NULL, 
+      y = "% of commutes lasting longer than 90 minutes",
+      caption = "Source: Census Bureau") +
+    theme_minimal()
   
-  
+  ncal_counties_2022_clevelanddot   
   
   
 #filtering for the specific pumas in norcal megaregion

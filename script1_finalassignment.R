@@ -3,8 +3,6 @@ library(janitor)
 library(tidycensus)
 library(stringr) 
 library(lubridate)
-library(urbnthemes) 
-set_urbn_defaults(style = "print")
 
 #installed census api 
 #census_api_key("cd05290c85440e7e445f0900d13bb133bfdfa6ad", install = TRUE)
@@ -173,6 +171,8 @@ ncal_counties_2019_2022 <-
     poverty_levelpercent_diff = poverty_levelpercent_2022-poverty_levelpercent_2019,
     total_pop_percent_diff = 100*(total_popE_2022 - total_popE_2019)/total_popE_2019,
     commutepercent_over90_by_workplace_diff = commutepercent_over90_by_workplace_2022-commutepercent_over90_by_workplace_2019,
+    commutepercent_by_car_over60_diff = commutepercent_by_car_over60_2022-commutepercent_by_car_over60_2019,
+    commutepercent_car_diff = commutepercent_car_2022-commutepercent_car_2019
   )
 
 ncal_counties_2019_2022 %>% 
@@ -243,38 +243,25 @@ barchart_ncal_counties <- ggplot(top10ncal_counties_2019) +
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
-chart_ncal_counties_test2
+barchart_ncal_counties
 
 #cleveland dot plots
 ncal_counties_2019_clevelanddot <- ncal_counties_2019 %>%
   arrange(commutepercent_over90) %>%
   mutate(NAME = factor(NAME, levels = unique(NAME))) %>%
   ggplot(aes(commutepercent_over90, NAME)) +
-  geom_point() +
+  geom_point(color = "blue") +  
   scale_x_continuous(expand = expansion(mult = c(0, 0)), limits = c(0, 15)) +
   labs(
-    title = "2019 test",
-    subtitle = "just a test",
-    x = NULL, 
-    y = "% of commutes lasting longer than 90 minutes",
-    caption = "Source: Census Bureau")
+    title = "Rate of Supercommutes",
+    subtitle = "In Northern California counties, 2019",
+    x = "% of commutes lasting longer than 90 minutes", 
+    y = NULL,
+    caption = "Source: Census Bureau") +
+  theme_minimal()
 
-ncal_counties_2019_clevelanddot
+print(ncal_counties_2019_clevelanddot)
 
-ncal_counties_2022_clevelanddot <- ncal_counties_2022 %>%
-  arrange(commutepercent_over90) %>%
-  mutate(NAME = factor(NAME, levels = unique(NAME))) %>%
-  ggplot(aes(commutepercent_over90, NAME)) +
-  geom_point() +
-  scale_x_continuous(expand = expansion(mult = c(0, 0)), limits = c(0, 15)) +
-  labs(
-    title = "2022 test",
-    subtitle = "just a test",
-    x = NULL, 
-    y = "% of commutes lasting longer than 90 minutes",
-    caption = "Source: Census Bureau")
-
-ncal_counties_2022_clevelanddot 
 
 ncal_counties_2019_2022_clevelanddot <- ncal_counties_2019_2022 %>%
   arrange(commutepercent_over90_2019) %>%
@@ -282,9 +269,9 @@ ncal_counties_2019_2022_clevelanddot <- ncal_counties_2019_2022 %>%
   ggplot(aes(x = commutepercent_over90_2019, xend = commutepercent_over90_2022, 
              y = NAME_2019, yend = NAME_2019)) +
   geom_point(aes(x = commutepercent_over90_2019), 
-             color = "blue", size = 3) +
+             color = "blue", size = 2) +
   geom_point(aes(x = commutepercent_over90_2022), 
-             color = "darkgreen", size = 3) +
+             color = "darkgreen", size = 2) +
   geom_segment(color = "darkgrey", linewidth = 1, alpha = 0.5, linetype = "solid",
                aes(x = commutepercent_over90_2019, xend = commutepercent_over90_2022,
                    y = NAME_2019, yend = NAME_2019),
@@ -310,31 +297,3 @@ ncal_counties_2019_2022_clevelanddot
 #supercommute change vs poverty level change  
 #supercommute change vs housing burden change
 #supercommute change vs pop change
-
-scatter_diff_pop_supercommute <- ncal_counties_2019_2022 %>%
-  ggplot(aes(x = total_pop_percent_diff, y = commute_over90_diff)) +
-  geom_point() +
-  scale_x_continuous(expand = expansion(mult = c(0.002, 0)), 
-                     limits = c(-10, 15),
-                     breaks = -5:10) +
-  scale_y_continuous(expand = expansion(mult = c(0, 0.002)), 
-                     limits = c(-5, 5),
-                     breaks = -15:15 * 5) +
-  labs(x = "Change in Rent Burden Over 30%)",
-       y = "Change in Supercommutes") +
-  scatter_grid()
-
-scatter_diff_pop_supercommute
-
-scatter_diff_pop_supercommute <- ncal_counties_2019_2022 %>%
-  ggplot(aes(x = total_pop_percent_diff, y = commute_over90_diff)) +
-  geom_point() +
-  scale_x_continuous(expand = expansion(mult = c(0.002, 0)), 
-                     limits = c(-10, 15),
-                     breaks = -5:10) +
-  scale_y_continuous(expand = expansion(mult = c(0, 0.002)), 
-                     limits = c(-5, 5),
-                     breaks = -15:15 * 5) +
-  labs(x = "Change in Rent Burden Over 30%)",
-       y = "Change in Supercommutes") +
-  scatter_grid()
